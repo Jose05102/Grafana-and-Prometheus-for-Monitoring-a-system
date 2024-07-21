@@ -214,7 +214,7 @@ Este proyecto muestra cómo configurar un sistema de monitoreo utilizando Grafan
 
 1. **Ejecutar Docker Compose:**
     ```bash
-    sudo docker-compose up -d
+    docker-compose up --build
     ```
 
 2. **Verificar los Targets en Prometheus:**
