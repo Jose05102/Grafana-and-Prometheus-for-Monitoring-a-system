@@ -32,14 +32,19 @@ Este proyecto muestra cómo configurar un sistema de monitoreo utilizando Grafan
 
 1. **Instalar Docker:**
     ```bash
-    sudo apt-get update
-    sudo apt-get install docker-ce docker-ce-cli containerd.io
+    sudo apt update
+    sudo apt upgrade
+    sudo apt install docker.io
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    sudo usermod -aG docker $USER
     ```
 
 2. **Instalar Docker-Compose:**
     ```bash
-    sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     sudo chmod +x /usr/local/bin/docker-compose
+    docker-compose --version
     ```
 
 3. **Verificar la Instalación:**
@@ -52,8 +57,8 @@ Este proyecto muestra cómo configurar un sistema de monitoreo utilizando Grafan
 
 1. **Clonar el Repositorio desde GitHub:**
     ```bash
-    git clone <URL del repositorio en GitHub>
-    cd <nombre del repositorio>
+    sudo git clone git@github.com:Jose05102/Grafana-and-Prometheus-for-Monitoring-a-system.git
+    cd git@github.com:Jose05102/Grafana-and-Prometheus-for-Monitoring-a-system.git
     ```
 
 ## Configuración
@@ -214,6 +219,7 @@ Este proyecto muestra cómo configurar un sistema de monitoreo utilizando Grafan
 
 1. **Ejecutar Docker Compose:**
     ```bash
+    sudo docker network create docker-net
     docker-compose up --build
     ```
 
