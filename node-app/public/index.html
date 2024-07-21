@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Datos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Registro de Datos</h1>
+        <form id="dataForm">
+            <div class="form-group">
+                <label for="fullName">Nombre Completo:</label>
+                <input type="text" id="fullName" name="fullName" required>
+            </div>
+            <div class="form-group">
+                <label for="favoriteColor">Color Favorito:</label>
+                <input type="text" id="favoriteColor" name="favoriteColor" required>
+            </div>
+            <div class="form-group">
+                <label for="favoriteSeries">Serie Favorita:</label>
+                <input type="text" id="favoriteSeries" name="favoriteSeries" required>
+            </div>
+            <button type="submit">Registrar</button>
+        </form>
+
+        <h2>Datos Registrados</h2>
+        <ul id="dataList"></ul>
+    </div>
+
+    <script>
+        document.getElementById('dataForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const fullName = document.getElementById('fullName').value;
+            const favoriteColor = document.getElementById('favoriteColor').value;
+            const favoriteSeries = document.getElementById('favoriteSeries').value;
+
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ fullName, favoriteColor, favoriteSeries })
+            });
+
+            const result = await response.json();
+            alert(result.message);
+            loadData(); // Recargar la lista después de registrar los datos
+        });
+
+        async function loadData() {
+            const response = await fetch('/data');
+            const data = await response.json();
+            const dataList = document.getElementById('dataList');
+            dataList.innerHTML = ''; // Limpiar la lista antes de llenarla
+
+            data.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `Nombre: ${item.fullName}, Color Favorito: ${item.favoriteColor}, Serie Favorita: ${item.favoriteSeries}`;
+                dataList.appendChild(listItem);
+            });
+        }
+
+        // Cargar datos al inicio
+        loadData();
+    </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+version: "3.9"
+services:
+  # Node.js Application
+  node-app:
+    build: ./node-app
+    container_name: node-app
+    restart: unless-stopped
+    ports:
+      - "3002:3000"
+    networks:
+      - docker-net
+
+  # DASHBOARDS
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    ports:
+      - ${GRAFANA_EXPOSE_PORT:-3001}:3000
+    volumes:
+      - ./logs:/var/log/grafana
+      - grafana:/var/lib/grafana
+    user: ${ID}
+    environment:
+      - TZ=Europe/Madrid
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+      - VIRTUAL_HOST=${GRAFANA_DOMAIN}
+      - VIRTUAL_PORT=3000
+    networks:
+      - docker-net
+
+  # METRICS COLLECTOR
+  prometheus:
+    image: bitnami/prometheus
+    container_name: prometheus
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    environment:
+      - TZ=Europe/Madrid
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus:/prometheus
+    networks:
+      - docker-net
+    ports:
+      - ${PROMETHEUS_PORT:-9090}:9090
+
+  # SYSTEM AGENT
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    env_file:
+      - ./.env
+    ports:
+      - ${NODE_EXPORTER_PORT:-9100}:9100
+    command:
+      - '--path.rootfs=/host'
+    pid: host
+    restart: unless-stopped
+    networks:
+      - docker-net
+    volumes:
+      - '/:/host:ro,rslave'
+
+  # DOCKER AGENT
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    env_file:
+      - ./.env
+    restart: unless-stopped
+    expose:
+      - ${CADVISOR_PORT:-8080}
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    networks:
+      - docker-net
+
+  # LOGS MONITOR
+  loki:
+    image: grafana/loki
+    container_name: loki
+    restart: unless-stopped
+    ports:
+      - ${LOKI_PORT:-3100}:3100
+    volumes:
+      - loki:/loki
+    environment:
+      - TZ=Europe/Madrid
+    networks:
+      - docker-net
+
+networks:
+  docker-net:
+    external: ${NET_EXTERNAL:-false}
+
+volumes:
+  grafana:
+  prometheus:
+  loki:
