@@ -58,7 +58,7 @@ Este proyecto muestra cómo configurar un sistema de monitoreo utilizando Grafan
 1. **Clonar el Repositorio desde GitHub:**
     ```bash
     sudo git clone git@github.com:Jose05102/Grafana-and-Prometheus-for-Monitoring-a-system.git
-    cd git@github.com:Jose05102/Grafana-and-Prometheus-for-Monitoring-a-system.git
+    cd Grafana-and-Prometheus-for-Monitoring-a-system
     ```
 
 ## Configuración
